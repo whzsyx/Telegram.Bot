@@ -41,14 +41,6 @@ public interface ITelegramBotClient
     /// <returns>Result of the API request</returns>
     Task<TResponse> SendRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);
 
-    /// <summary>Method MakeRequest was renamed as <see cref="SendRequest">SendRequest</see></summary>
-    [Obsolete("Method MakeRequest was renamed as SendRequest")]
-    Task<TResponse> MakeRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);
-
-    /// <summary>Method MakeRequestAsync was renamed as <see cref="SendRequest">SendRequest</see></summary>
-    [Obsolete("Method MakeRequestAsync was renamed as SendRequest")]
-    Task<TResponse> MakeRequestAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);
-
     /// <summary>Test the API token</summary>
     /// <param name="cancellationToken"></param>
     /// <returns><see langword="true"/> if token is valid</returns>
@@ -86,5 +78,26 @@ public static partial class TelegramBotClientExtensions
             cancellationToken).ConfigureAwait(false);
         await botClient.DownloadFile(filePath: file.FilePath!, destination, cancellationToken).ConfigureAwait(false);
         return file;
+    }
+
+    /// <summary>Downloads an encrypted Passport file, decrypts it, and writes the content to <paramref name="destination"/> stream</summary>
+    /// <param name="botClient">Instance of bot client</param>
+    /// <param name="passportFile"></param>
+    /// <param name="fileCredentials"></param>
+    /// <param name="destination"></param>
+    /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+    /// <returns>File information of the encrypted Passport file on Telegram servers.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static async Task<TGFile> DownloadAndDecryptPassportFileAsync(this ITelegramBotClient botClient, PassportFile passportFile,
+        FileCredentials fileCredentials, Stream destination, CancellationToken cancellationToken = default)
+    {
+        if (passportFile == null) throw new ArgumentNullException(nameof(passportFile));
+        if (fileCredentials == null) throw new ArgumentNullException(nameof(fileCredentials));
+        if (destination == null) throw new ArgumentNullException(nameof(destination));
+        using var encryptedContentStream = passportFile.FileSize > 0 ? new MemoryStream((int)passportFile.FileSize) : new MemoryStream();
+        var fileInfo = await botClient.ThrowIfNull().GetInfoAndDownloadFile(passportFile.FileId, encryptedContentStream, cancellationToken).ConfigureAwait(false);
+        encryptedContentStream.Position = 0;
+        await new Passport.Decrypter().DecryptFileAsync(encryptedContentStream, fileCredentials, destination, cancellationToken).ConfigureAwait(false);
+        return fileInfo;
     }
 }

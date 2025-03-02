@@ -17,15 +17,19 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Title>Telegram Bot API Client</Title>
-    <Description>This library gives you easy access to Telegram Bot API so you can start building useful bots for Telegram.</Description>
+    <Description>This library gives you easy access to Telegram Bot API so you can start building useful bots for Telegram.
+
+Release Notes:
+$(ReleaseNotes.Replace("|", "%0D%0A").Replace(" - ","%0D%0A- ").Replace("  ", "%0D%0A%0D%0A"))</Description>
     <PackageId>Telegram.Bot</PackageId>
     <Authors>Wizou,tuscen,Poulad,RoundRobin</Authors>
-    <Copyright>Copyright © TelegramBots 2016-2024</Copyright>
+    <Copyright>Copyright © TelegramBots 2016-2025</Copyright>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/TelegramBots/telegram.bot</PackageProjectUrl>
+    <PackageReleaseNotes>$(ReleaseNotes.Replace("|", "%0D%0A").Replace(" - ","%0D%0A- ").Replace("  ", "%0D%0A%0D%0A"))</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/TelegramBots/Telegram.Bot</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/TelegramBots/telegram.bot.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/TelegramBots/Telegram.Bot.git</RepositoryUrl>
     <PackageTags>Telegram;Bot;Api;Payment;Inline;Games</PackageTags>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
@@ -70,7 +74,7 @@
 
   <!-- Make build deterministic only in CI environment to make local development easier with non-trimmed paths -->
   <!-- TF_BUILD is a predefined variable in Azure Pipelines -->
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -78,10 +82,6 @@
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">

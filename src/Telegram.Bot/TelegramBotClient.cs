@@ -10,7 +10,7 @@ using Telegram.Bot.Requests;
 using System.Net.Http.Json;
 #endif
 
-#pragma warning disable CA1001 // _receivingEvents isn't used with timer or WaitHandle, so needn't be disposed
+#pragma warning disable CA1001 // _receivingEvents isn't used with timer or WaitHandle, so needn't be disposed 
 
 namespace Telegram.Bot;
 
@@ -94,16 +94,6 @@ public class TelegramBotClient : ITelegramBotClient
     public TelegramBotClient(string token, HttpClient? httpClient = null, CancellationToken cancellationToken = default)
         : this(new TelegramBotClientOptions(token), httpClient, cancellationToken)
     { }
-
-    /// <inheritdoc/>
-    [Obsolete("Method MakeRequestAsync was renamed as SendRequest")]
-    public Task<TResponse> MakeRequestAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
-        => SendRequest(request, cancellationToken);
-
-    /// <inheritdoc/>
-    [Obsolete("Method MakeRequest was renamed as SendRequest")]
-    public Task<TResponse> MakeRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
-        => SendRequest(request, cancellationToken);
 
     /// <inheritdoc/>
     public virtual async Task<TResponse> SendRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
